@@ -7,6 +7,7 @@ Este archivo contiene las preguntas que se van a realizar en el laboratorio.
 Utilice los archivos `tbl0.tsv`, `tbl1.tsv` y `tbl2.tsv`, para resolver las preguntas.
 
 """
+from posixpath import split
 import pandas as pd
 
 tbl0 = pd.read_csv("tbl0.tsv", sep="\t")
@@ -22,7 +23,8 @@ def pregunta_01():
     40
 
     """
-    return
+    longitud = len(tbl0)
+    return longitud
 
 
 def pregunta_02():
@@ -33,7 +35,8 @@ def pregunta_02():
     4
 
     """
-    return
+    cant_columns = len(tbl0.columns)
+    return cant_columns
 
 
 def pregunta_03():
@@ -50,7 +53,8 @@ def pregunta_03():
     Name: _c1, dtype: int64
 
     """
-    return
+    cant_occur = tbl0['_c1'].value_counts().sort_index()
+    return cant_occur
 
 
 def pregunta_04():
@@ -65,7 +69,9 @@ def pregunta_04():
     E    4.785714
     Name: _c2, dtype: float64
     """
-    return
+    column_mean = tbl0.groupby('_c1')['_c2'].mean()
+    return column_mean
+
 
 
 def pregunta_05():
@@ -82,7 +88,8 @@ def pregunta_05():
     E    9
     Name: _c2, dtype: int64
     """
-    return
+    column_max = tbl0.groupby('_c1')['_c2'].max()
+    return column_max
 
 
 def pregunta_06():
@@ -94,7 +101,12 @@ def pregunta_06():
     ['A', 'B', 'C', 'D', 'E', 'F', 'G']
 
     """
-    return
+    tbl1['_c4'] = tbl1['_c4'].str.upper()
+    column_uniques = tbl1['_c4'].unique()
+    column_uniques.sort()
+
+    return_list = column_uniques.tolist()
+    return return_list
 
 
 def pregunta_07():
@@ -110,7 +122,9 @@ def pregunta_07():
     E    67
     Name: _c2, dtype: int64
     """
-    return
+    column_sum = tbl0.groupby('_c1')['_c2'].sum()
+
+    return column_sum
 
 
 def pregunta_08():
@@ -128,8 +142,9 @@ def pregunta_08():
     39   39   E    5  1998-01-26    44
 
     """
-    return
+    tbl0['suma'] = tbl0['_c0'] + tbl0['_c2']
 
+    return tbl0
 
 def pregunta_09():
     """
@@ -146,8 +161,9 @@ def pregunta_09():
     39   39   E    5  1998-01-26  1998
 
     """
-    return
+    tbl0['year'] = tbl0['_c3'].str[:4]
 
+    return tbl0
 
 def pregunta_10():
     """
@@ -156,15 +172,19 @@ def pregunta_10():
 
     Rta/
                                    _c1
-      _c0
+      _c2
     0   A              1:1:2:3:6:7:8:9
     1   B                1:3:4:5:6:8:9
     2   C                    0:5:6:7:9
     3   D                  1:2:3:5:5:7
     4   E  1:1:2:3:3:4:5:5:5:6:7:8:8:9
     """
-    return
+    df = tbl0.groupby(['_c1'])['_c2'].apply(list).reset_index()
+    df['_c2'] = df['_c2'].apply(lambda x: sorted(x))
+    df['_c2'] = df['_c2'].apply(lambda x: ':'.join(str(e) for e in x) )
+    df.set_index("_c1", inplace = True)
 
+    return df
 
 def pregunta_11():
     """
@@ -180,10 +200,14 @@ def pregunta_11():
     ...
     37   37  a,c,e,f
     38   38      d,e
-    39   39    a,d,f
-    """
-    return
+    39   39    a,d,f    """
+    
 
+    df = tbl1.groupby('_c0')['_c4'].apply(list).reset_index()
+    df['_c4'] = df['_c4'].apply(lambda x: sorted(x))
+    df['_c4'] = df['_c4'].apply(lambda x: ','.join(str(e) for e in x))
+
+    return df
 
 def pregunta_12():
     """
@@ -202,6 +226,8 @@ def pregunta_12():
     """
     return
 
+#df = tbl2.groupby('_c0')['_c5a'].apply(list).reset_index()
+#print(df)
 
 def pregunta_13():
     """
@@ -217,4 +243,7 @@ def pregunta_13():
     E    275
     Name: _c5b, dtype: int64
     """
-    return
+    tbl02 = pd.merge(tbl0, tbl2)
+    df = tbl02.groupby('_c1')['_c5b'].sum('_c5b')
+
+    return df

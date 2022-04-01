@@ -224,10 +224,14 @@ def pregunta_12():
     38   38                    eee:0,fff:9,iii:2
     39   39                    ggg:3,hhh:8,jjj:5
     """
-    return
+    
+    tbl2['_c5b'] = tbl2['_c5b'].astype(str)
+    tbl2['_c5'] = tbl2[['_c5a', '_c5b']].agg(':'.join, axis=1)
+    df = tbl2.groupby('_c0')['_c5'].apply(list).reset_index()
+    df['_c5'] = df['_c5'].apply(lambda x: sorted(x))
+    df['_c5'] = [','.join(map(str, l)) for l in df['_c5']]
 
-#df = tbl2.groupby('_c0')['_c5a'].apply(list).reset_index()
-#print(df)
+    return df
 
 def pregunta_13():
     """
